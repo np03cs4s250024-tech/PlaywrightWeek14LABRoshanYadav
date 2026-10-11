@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sajilo Pay | Qrius Practice App</title>
+<style>
+  :root{
+    --navy:#000080; --indigo:#4B0082; --coral:#FF7F50; --blue:#005AF4; --cyan:#00FBFF;
+    --ivory:#FFFBF0; --lavender:#E1CFF3; --sky:#B4E6FF; --slate:#6B6F85; --ink:#1A1A2E;
+    --ok:#1E7B45; --bad:#B42318;
+  }
+  *{box-sizing:border-box;}
+  html{min-height:100%; background:#4B0082 linear-gradient(135deg,#00FBFF 0%,#005AF4 50%,#4B0082 100%) no-repeat;}
+  body{margin:0; font-family:"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background:transparent; color:var(--ink);
+    min-height:100vh; padding:32px 16px;}
+  .shell{max-width:560px; margin:0 auto;}
+  .brand{color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  .brand .dot{width:34px; height:34px; border-radius:10px; background:var(--coral);
+    display:flex; align-items:center; justify-content:center; font-weight:700; color:#2A1200;}
+  .brand b{font-size:20px;} .brand small{opacity:.85; display:block; font-size:12px;}
+  .card{background:var(--ivory); border-radius:16px; padding:28px; box-shadow:0 12px 40px rgba(0,0,60,.25);}
+  h1{color:var(--navy); font-size:24px; margin:0 0 6px;}
+  .sub{color:var(--slate); margin:0 0 20px; font-size:14px;}
+  .field{margin-bottom:16px;}
+  label, legend{display:block; font-weight:600; color:var(--navy); font-size:14px; margin-bottom:6px;}
+  input[type=text], input[type=tel], input[type=email], input[type=password], select{
+    width:100%; padding:10px 12px; border:1.5px solid var(--lavender); border-radius:10px;
+    font-size:15px; background:#fff; color:var(--ink);}
+  input:focus, select:focus{outline:2px solid var(--blue); border-color:var(--blue);}
+  select:disabled{background:#f1f1f5; color:#999;}
+  .row{display:flex; gap:12px;} .row .field{flex:1;}
+  .pw-wrap{display:flex; gap:8px;} .pw-wrap input{flex:1;}
+  .ghost{border:1.5px solid var(--lavender); background:#fff; color:var(--navy); border-radius:10px;
+    padding:0 12px; cursor:pointer; font-size:13px; font-weight:600;}
+  fieldset{border:none; padding:0; margin:0 0 16px;}
+  .choices{display:flex; gap:18px; flex-wrap:wrap;}
+  .choices label{font-weight:400; color:var(--ink); display:flex; align-items:center; gap:6px; margin:0;}
+  .err{color:var(--bad); font-size:13px; margin:6px 0 0; min-height:0;}
+  .err:empty{display:none;}
+  .hint{color:var(--slate); font-size:12px; margin:6px 0 0;}
+  .file-info{color:var(--ok); font-size:13px; margin:6px 0 0;}
+  .file-info:empty{display:none;}
+  .terms label{font-weight:400; color:var(--ink); display:flex; gap:8px; align-items:flex-start;}
+  .btn{width:100%; border:none; border-radius:12px; padding:13px; font-size:16px; font-weight:700;
+    background:var(--navy); color:#fff; cursor:pointer; margin-top:6px;}
+  .btn:hover:not(:disabled){background:var(--blue);}
+  .btn:disabled{background:#B9BBCB; cursor:not-allowed;}
+  .alert{background:#FDE8E6; color:var(--bad); border-radius:10px; padding:10px 12px; font-size:14px; margin-bottom:14px;}
+  .alert:empty{display:none;}
+  .success{background:#E3F6EA; color:var(--ok); border-radius:12px; padding:16px; margin-bottom:16px;}
+  .switch{text-align:center; margin-top:16px; font-size:14px;}
+  .switch a{color:var(--blue); font-weight:600;}
+  .balance{background:var(--navy); color:#fff; border-radius:14px; padding:18px; margin:16px 0;}
+  .balance span{display:block; font-size:13px; opacity:.8;} .balance strong{font-size:28px;}
+  dl{display:grid; grid-template-columns:140px 1fr; gap:8px 12px; margin:0 0 18px; font-size:14px;}
+  dt{color:var(--slate);} dd{margin:0; font-weight:600; color:var(--navy);}
+  .foot{color:#fff; opacity:.8; font-size:12px; text-align:center; margin-top:14px;}
+  .foot button{background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-size:12px;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brand"><div class="dot">S</div><div><b>Sajilo Pay</b><small>Qrius practice app for Playwright labs</small></div></div>
+
+  <!-- ===================== LOGIN ===================== -->
+  <main class="card" id="view-login" hidden>
+    <h1>Log in to Sajilo Pay</h1>
+    <p class="sub">Use your registered mobile number.</p>
+    <div class="success" id="registered-banner" role="status" hidden></div>
+    <div class="alert" id="login-error" role="alert"></div>
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="login-mobile">Mobile number</label>
+        <input type="tel" id="login-mobile" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" autocomplete="current-password" />
+      </div>
+      <div class="field terms">
+        <label><input type="checkbox" id="remember" /> Remember me on this device</label>
+      </div>
+      <button class="btn" type="submit" id="login-btn">Log in</button>
+    </form>
+    <p class="switch">New to Sajilo Pay? <a href="#register">Create an account</a></p>
+  </main>
+
+  <!-- ===================== REGISTER ===================== -->
+  <main class="card" id="view-register" hidden>
+    <h1>Create your Sajilo Pay wallet</h1>
+    <p class="sub">All fields are required unless marked optional.</p>
+    <form id="register-form" novalidate>
+      <div class="field">
+        <label for="fullName">Full name</label>
+        <input type="text" id="fullName" aria-describedby="fullName-error" />
+        <p class="err" id="fullName-error"></p>
+      </div>
+      <div class="field">
+        <label for="mobile">Mobile number</label>
+        <input type="tel" id="mobile" aria-describedby="mobile-error" />
+        <p class="hint">10 digits, starting with 97 or 98</p>
+        <p class="err" id="mobile-error"></p>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" aria-describedby="email-error" />
+        <p class="err" id="email-error"></p>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" aria-describedby="password-error" />
+          <button type="button" class="ghost" id="toggle-pw">Show</button>
+        </div>
+        <p class="hint">At least 8 characters, including a number</p>
+        <p class="err" id="password-error"></p>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="province">Province</label>
+          <select id="province" aria-describedby="province-error">
+            <option value="">Select province</option>
+            <option value="koshi">Koshi</option>
+            <option value="madhesh">Madhesh</option>
+            <option value="bagmati">Bagmati</option>
+            <option value="gandaki">Gandaki</option>
+            <option value="lumbini">Lumbini</option>
+            <option value="karnali">Karnali</option>
+            <option value="sudurpashchim">Sudurpashchim</option>
+          </select>
+          <p class="err" id="province-error"></p>
+        </div>
+        <div class="field">
+          <label for="district">District</label>
+          <select id="district" disabled aria-describedby="district-error">
+            <option value="">Select province first</option>
+          </select>
+          <p class="err" id="district-error"></p>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Account type</legend>
+        <div class="choices">
+          <label><input type="radio" name="accountType" value="personal" checked /> Personal</label>
+          <label><input type="radio" name="accountType" value="business" /> Business</label>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label for="citizenship">Citizenship photo</label>
+        <input type="file" id="citizenship" accept=".jpg,.jpeg,.png,image/jpeg,image/png" aria-describedby="citizenship-error" />
+        <p class="hint">JPG or PNG, up to 1 MB</p>
+        <p class="file-info" id="file-info" data-testid="file-info"></p>
+        <p class="err" id="citizenship-error"></p>
+      </div>
+      <fieldset>
+        <legend>Send me updates by (optional)</legend>
+        <div class="choices">
+          <label><input type="checkbox" name="notify" value="SMS" /> SMS</label>
+          <label><input type="checkbox" name="notify" value="WhatsApp" /> WhatsApp</label>
+          <label><input type="checkbox" name="notify" value="Viber" /> Viber</label>
+        </div>
+      </fieldset>
+      <div class="field terms">
+        <label><input type="checkbox" id="terms" /> I agree to the Terms and Privacy Policy</label>
+      </div>
+      <button class="btn" type="submit" id="register-btn" disabled>Create account</button>
+    </form>
+    <p class="switch">Already have an account? <a href="#login">Log in</a></p>
+  </main>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <main class="card" id="view-dashboard" hidden>
+    <h1 id="greeting">Namaste!</h1>
+    <p class="sub">Your wallet is ready.</p>
+    <div class="balance"><span>Wallet balance</span><strong data-testid="wallet-balance" id="balance">Rs 0.00</strong></div>
+    <dl data-testid="profile">
+      <dt>Mobile</dt><dd id="p-mobile"></dd>
+      <dt>Province</dt><dd id="p-province"></dd>
+      <dt>District</dt><dd id="p-district"></dd>
+      <dt>Account type</dt><dd id="p-type"></dd>
+      <dt>Updates by</dt><dd id="p-notify"></dd>
+    </dl>
+    <button class="btn" type="button" id="logout">Log out</button>
+  </main>
+
+  <p class="foot">Practice app only. No real money, no real data.
+    <button type="button" id="reset">Reset practice data</button></p>
+</div>
+
+<script>
+(function(){
+  var DISTRICTS = {
+    koshi:['Bhojpur','Dhankuta','Ilam','Jhapa','Khotang','Morang','Okhaldhunga','Panchthar','Sankhuwasabha','Solukhumbu','Sunsari','Taplejung','Terhathum','Udayapur'],
+    madhesh:['Bara','Dhanusha','Mahottari','Parsa','Rautahat','Saptari','Sarlahi','Siraha'],
+    bagmati:['Bhaktapur','Chitwan','Dhading','Dolakha','Kathmandu','Kavrepalanchok','Lalitpur','Makwanpur','Nuwakot','Ramechhap','Rasuwa','Sindhuli','Sindhupalchok'],
+    gandaki:['Baglung','Gorkha','Kaski','Lamjung','Manang','Mustang','Myagdi','Nawalpur','Parbat','Syangja','Tanahun'],
+    lumbini:['Arghakhanchi','Banke','Bardiya','Dang','Eastern Rukum','Gulmi','Kapilvastu','Palpa','Parasi','Pyuthan','Rolpa','Rupandehi'],
+    karnali:['Dailekh','Dolpa','Humla','Jajarkot','Jumla','Kalikot','Mugu','Salyan','Surkhet','Western Rukum'],
+    sudurpashchim:['Achham','Baitadi','Bajhang','Bajura','Dadeldhura','Darchula','Doti','Kailali','Kanchanpur']
+  };
+  var SEED = [{ fullName:'Ram Bahadur Thapa', mobile:'9841234567', email:'ram.thapa@example.com',
+    password:'Sajilo@123', province:'Bagmati', district:'Lalitpur', accountType:'Personal',
+    notify:['SMS'], balance:1250000 }];   // balance stored in paisa
+
+  /* ---------- tiny store: localStorage when available, memory otherwise ---------- */
+  var KEY = 'sajilo-users', mem = null;
+  function load(){
+    try { var raw = localStorage.getItem(KEY); if(raw) return JSON.parse(raw); } catch(e){}
+    return mem || SEED.slice();
+  }
+  function save(list){ mem = list; try { localStorage.setItem(KEY, JSON.stringify(list)); } catch(e){} }
+  var current = null;
+
+  var VIEWS = {}, SHELL = document.querySelector('.shell'), FOOT = document.querySelector('.foot');
+  ['login','register','dashboard'].forEach(function(v){ VIEWS[v] = document.getElementById('view-'+v); });
+  function $(id){
+    var el = document.getElementById(id);
+    if(el) return el;
+    for(var k in VIEWS){ el = VIEWS[k].querySelector('#'+id); if(el) return el; }
+    return null;
+  }
+  function rupees(paisa){ return 'Rs ' + (paisa/100).toLocaleString('en-IN',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+  /* ---------- views ---------- */
+  function route(){
+    var h = location.hash.replace('#','') || 'login';
+    if(h === 'dashboard' && !current) h = 'login';
+    // only the active view lives in the DOM, like a real single-page app
+    Object.keys(VIEWS).forEach(function(v){
+      var el = VIEWS[v];
+      if(v === h){ el.hidden = false; if(!el.isConnected) SHELL.insertBefore(el, FOOT); }
+      else if(el.isConnected){ el.remove(); }
+    });
+    document.title = (h === 'register' ? 'Register' : h === 'dashboard' ? 'Dashboard' : 'Log in') + ' | Sajilo Pay';
+    if(h === 'dashboard') paintDashboard();
+  }
+  window.addEventListener('hashchange', route);
+
+  /* ---------- register form ---------- */
+  var province = $('province'), district = $('district'), terms = $('terms'), regBtn = $('register-btn');
+
+  province.addEventListener('change', function(){
+    district.disabled = true;
+    district.innerHTML = '<option value="">Loading districts...</option>';
+    var p = province.value;
+    if(!p){ district.innerHTML = '<option value="">Select province first</option>'; return; }
+    setTimeout(function(){              // simulates a slow API call
+      if(province.value !== p) return;
+      district.innerHTML = '<option value="">Select district</option>' +
+        DISTRICTS[p].map(function(d){ return '<option value="'+d.toLowerCase().replace(/ /g,'-')+'">'+d+'</option>'; }).join('');
+      district.disabled = false;
+    }, 800);
+  });
+
+  terms.addEventListener('change', function(){ regBtn.disabled = !terms.checked; });
+
+  $('toggle-pw').addEventListener('click', function(){
+    var pw = $('password'), show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password';
+    this.textContent = show ? 'Hide' : 'Show';
+  });
+
+  var fileOk = false;
+  $('citizenship').addEventListener('change', function(){
+    var f = this.files[0]; $('file-info').textContent = ''; $('citizenship-error').textContent = ''; fileOk = false;
+    if(!f) return;
+    var okType = /\.(jpe?g|png)$/i.test(f.name);
+    if(!okType || f.size > 1024*1024){
+      $('citizenship-error').textContent = 'Only JPG or PNG files up to 1 MB are allowed';
+      return;
+    }
+    fileOk = true;
+    $('file-info').textContent = 'Selected: ' + f.name + ' (' + Math.max(1, Math.round(f.size/1024)) + ' KB)';
+  });
+
+  function setErr(id, msg){ $(id+'-error').textContent = msg || ''; $(id).setAttribute('aria-invalid', msg ? 'true' : 'false'); }
+
+  $('register-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var users = load();
+    var name = $('fullName').value.trim(), mobile = $('mobile').value.trim(),
+        email = $('email').value.trim(), pw = $('password').value;
+    var bad = false;
+    function check(id, cond, msg){ if(cond){ setErr(id, msg); bad = true; } else setErr(id, ''); }
+    check('fullName', name.split(/\s+/).filter(Boolean).length < 2, 'Enter your first and last name');
+    check('mobile', !/^9[78]\d{8}$/.test(mobile), 'Enter a valid 10-digit Nepali mobile number (starts with 97 or 98)');
+    if(!bad && users.some(function(u){ return u.mobile === mobile; })) check('mobile', true, 'This mobile number is already registered');
+    check('email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'Enter a valid email address');
+    check('password', pw.length < 8 || !/\d/.test(pw), 'Password must be at least 8 characters and include a number');
+    check('province', !province.value, 'Select your province');
+    check('district', !district.value, 'Select your district');
+    if(!fileOk){ $('citizenship-error').textContent = $('citizenship-error').textContent || 'Upload your citizenship photo'; bad = true; }
+    if(bad) return;
+
+    regBtn.disabled = true; regBtn.textContent = 'Creating account...';
+    setTimeout(function(){             // simulates the server creating the account
+      var notify = [].slice.call(document.querySelectorAll('input[name=notify]:checked')).map(function(c){ return c.value; });
+      var type = document.querySelector('input[name=accountType]:checked').value;
+      users.push({ fullName:name, mobile:mobile, email:email, password:pw,
+        province:province.options[province.selectedIndex].text,
+        district:district.options[district.selectedIndex].text,
+        accountType: type === 'business' ? 'Business' : 'Personal', notify:notify, balance:0 });
+      save(users);
+      $('register-form').reset(); fileOk = false; $('file-info').textContent = '';
+      district.innerHTML = '<option value="">Select province first</option>'; district.disabled = true;
+      regBtn.textContent = 'Create account'; regBtn.disabled = true;
+      $('registered-banner').textContent = 'Account created for ' + name.split(/\s+/)[0] + '. Please log in.';
+      $('registered-banner').hidden = false;
+      location.hash = 'login';
+    }, 1500);
+  });
+
+  /* ---------- login form ---------- */
+  $('login-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = $('login-btn');
+    $('login-error').textContent = '';
+    var mobile = $('login-mobile').value.trim(), pw = $('login-password').value;
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    setTimeout(function(){             // simulates the auth API
+      btn.disabled = false; btn.textContent = 'Log in';
+      var user = load().filter(function(u){ return u.mobile === mobile && u.password === pw; })[0];
+      if(!user){ $('login-error').textContent = 'Incorrect mobile number or password'; return; }
+      current = user; $('registered-banner').hidden = true;
+      $('login-form').reset();
+      location.hash = 'dashboard';
+    }, 1000);
+  });
+
+  function paintDashboard(){
+    $('greeting').textContent = 'Namaste, ' + current.fullName.split(/\s+/)[0] + '!';
+    $('balance').textContent = rupees(current.balance);
+    $('p-mobile').textContent = current.mobile;
+    $('p-province').textContent = current.province;
+    $('p-district').textContent = current.district;
+    $('p-type').textContent = current.accountType;
+    $('p-notify').textContent = current.notify.length ? current.notify.join(', ') : 'None';
+  }
+  $('logout').addEventListener('click', function(){ current = null; location.hash = 'login'; });
+  $('reset').addEventListener('click', function(){
+    try { localStorage.removeItem(KEY); } catch(e){} mem = null; current = null; location.hash = 'login'; route();
+  });
+
+  route();
+})();
+</script>
+</body>
+</html>
